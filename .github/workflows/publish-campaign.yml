@@ -1,0 +1,48 @@
+name: Publish aligned campaign
+
+on:
+  push:
+    branches: [main]
+    paths: [campaign-source.json]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: ${{ hashFiles('campaign-source.json') != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install rendering dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-inter fonts-noto-core
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || pip install weasyprint==68.0 'pypdf>=5,<7'
+      - name: Expand campaign source
+        run: |
+          python - <<'PY'
+          import base64, json
+          from pathlib import Path
+          root = Path('.')
+          data = json.loads((root / 'campaign-source.json').read_text())
+          for rel, encoded in data['files'].items():
+              path = root / rel
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_bytes(base64.b64decode(encoded))
+          (root / 'campaign-source.json').unlink()
+          PY
+      - name: Generate and verify PDFs
+        run: python scripts/generate_pdfs.py
+      - name: Commit aligned campaign
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Publish aligned Bravo CPG candidate campaign'
+          git push
