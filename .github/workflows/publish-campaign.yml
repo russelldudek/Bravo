@@ -3,7 +3,8 @@ name: Generate and verify campaign PDFs
 on:
   push:
     branches: [main]
-    paths: [campaign-ready.txt]
+    paths:
+      - campaign-ready.txt
   workflow_dispatch:
 
 permissions:
@@ -11,7 +12,6 @@ permissions:
 
 jobs:
   publish:
-    if: ${{ hashFiles('campaign-ready.txt') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
