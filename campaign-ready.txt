@@ -1,0 +1,1 @@
+Aligned source committed. Generate and verify all campaign PDFs.
