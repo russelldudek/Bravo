@@ -30,12 +30,22 @@ jobs:
           import base64, json
           from pathlib import Path
           root = Path('.')
-          data = json.loads((root / 'campaign-source.json').read_text())
+          pointer = json.loads((root / 'campaign-source.json').read_text())
+          if 'chunks' in pointer:
+              payload = ''.join((root / rel).read_text() for rel in pointer['chunks'])
+              data = json.loads(payload)
+          else:
+              data = pointer
           for rel, encoded in data['files'].items():
               path = root / rel
               path.parent.mkdir(parents=True, exist_ok=True)
               path.write_bytes(base64.b64decode(encoded))
           (root / 'campaign-source.json').unlink()
+          for rel in pointer.get('chunks', []):
+              (root / rel).unlink()
+          chunk_dir = root / '.campaign'
+          if chunk_dir.exists() and not any(chunk_dir.iterdir()):
+              chunk_dir.rmdir()
           PY
       - name: Generate and verify PDFs
         run: python scripts/generate_pdfs.py
