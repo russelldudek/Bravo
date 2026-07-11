@@ -1,7 +1,7 @@
 name: Publish reconstructed campaign
 
 on:
-  push:
+  pull_request:
     branches: [main]
     paths:
       - campaign-source.json
@@ -12,9 +12,13 @@ permissions:
 
 jobs:
   publish:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -47,10 +51,12 @@ jobs:
         run: python scripts/generate_pdfs.py
       - name: Verify complete campaign
         run: python scripts/audit_campaign.py
-      - name: Commit reconstructed campaign to main
+      - name: Commit reconstructed campaign to pull-request branch
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
           git commit -m 'Reconstruct and verify Bravo CPG RoleForge campaign'
-          git push
+          git push origin HEAD:"${HEAD_REF}"
