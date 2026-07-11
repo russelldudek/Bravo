@@ -1,10 +1,10 @@
-name: Generate and verify campaign PDFs
+name: Publish reconstructed campaign
 
 on:
   push:
     branches: [main]
     paths:
-      - campaign-ready.txt
+      - campaign-source.json
   workflow_dispatch:
 
 permissions:
@@ -18,6 +18,25 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Expand reconstructed campaign source
+        run: |
+          python - <<'PY'
+          import base64
+          import json
+          from pathlib import Path
+
+          root = Path('.')
+          pointer = json.loads((root / 'campaign-source.json').read_text())
+          raw = ''.join((root / path).read_text() for path in pointer['chunks'])
+          data = json.loads(raw)
+          for rel, encoded in data['files'].items():
+              path = root / rel
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_bytes(base64.b64decode(encoded))
+          (root / 'campaign-source.json').unlink()
+          for rel in pointer['chunks']:
+              (root / rel).unlink()
+          PY
       - name: Install rendering dependencies
         run: |
           sudo apt-get update
@@ -26,11 +45,12 @@ jobs:
           pip install -r requirements.txt
       - name: Generate and verify PDFs
         run: python scripts/generate_pdfs.py
-      - name: Commit generated artifacts
+      - name: Verify complete campaign
+        run: python scripts/audit_campaign.py
+      - name: Commit reconstructed campaign to main
         run: |
-          rm campaign-ready.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'Generate and verify aligned campaign PDFs'
+          git commit -m 'Reconstruct and verify Bravo CPG RoleForge campaign'
           git push
