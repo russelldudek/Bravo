@@ -2,19 +2,20 @@
 
 ## Official-source observations
 
-- **Official logo source:** Bravo CPG wordmark observed in the header of the official website, `https://www.bravocpg.com/`. No logo file is copied or hotlinked in this candidate campaign because a stable downloadable brand asset and explicit public-use guidance were not verified.
-- **Official imagery sources reviewed:** official home, team, fractional COO, pricing, and careers pages; imagery emphasizes warehouse operations, consumer products, retail shelves, and collaborative teams.
-- **Palette:** the campaign uses an original employer-adjacent palette of forest green, leaf green, cream, warm paper, and restrained orange. These are documented as candidate-campaign colors derived from the official site's organic CPG and operational tone, not claimed as Bravo's official hex values.
-- **Typography character:** the official site presents clean, contemporary service-business typography. The campaign uses an original Georgia + system-sans pairing to support the field-manual / runbook metaphor; it is not presented as Bravo's official type system.
-- **Photography / illustration character:** practical, people-and-product-oriented, growth-brand and supply-chain context rather than glossy corporate abstraction.
-- **Geometry and interface motifs:** spacious editorial sections, rounded service cards, practical comparison structures, and high-contrast calls to action.
-- **Overall vibe:** energetic, accessible, founder-friendly, operationally credible, and distinctly CPG rather than industrial-enterprise.
+- **Official logo source:** Bravo CPG wordmark observed on the official website, `https://www.bravocpg.com/`. The mark combines a clean lowercase black `bravo` wordmark with a dark-green circular `CPG` device. The candidate campaign uses a code-native typographic recreation rather than copying or hotlinking a fragile external image asset.
+- **Official imagery sources reviewed:** official home, services, team, fractional COO, pricing, careers, and category pages. Imagery is practical and consumer-product-led: teams, warehouses, retail shelves, packaged products, ingredients, beauty products, freight, and category-specific operating contexts.
+- **Palette:** primary visual grammar is dark green, black, white, and soft neutral gray. Brighter category accents are used sparingly to acknowledge food, wellness, beauty, and other consumer-product environments without replacing the core Bravo identity. The campaign does not claim proprietary official hex values.
+- **Typography character:** clean, contemporary, direct service-business sans serif with strong weight contrast, short headlines, generous white space, and highly legible navigation. The candidate campaign uses Inter/system sans throughout the website and retains restrained professional document typography.
+- **Photography / illustration character:** people-and-product-oriented, founder-friendly, operational, practical, and growth-stage. The campaign avoids generic enterprise abstraction and uses original diagrams rather than unlicensed photography.
+- **Geometry and interface motifs:** circular CPG device, bold black/green contrast, open white sections, category color punctuations, clean dividers, large type, and direct calls to action.
+- **Motion character:** calm, purposeful, and operational rather than theatrical. Movement should show work progressing, constraints becoming visible, and capability transferring—not decorative spinning, floating, or generic scroll effects.
+- **Overall vibe:** modern, energetic, accessible, embedded, founder-friendly, and distinctly CPG.
 
 ## Asset decisions
 
-- **Approved or supportable assets:** public factual descriptions and text references to Bravo CPG; source links to official pages.
-- **Original visuals created:** Client Ops Runbook, operating-mechanism panels, score bars, evidence trail, 90-day phases, and engagement portfolio simulator.
-- **Not used:** copied client logos, third-party logo aggregators, or externally hotlinked photography.
-- **Recommended use by artifact:** richer employer-adjacent palette and runbook metaphor on the candidate vision site; restrained forest/cream accents in resume, cover letter, and PDFs.
+- **Approved or supportable assets:** public factual descriptions, links to official Bravo pages, and a code-native candidate-site recreation of the observed wordmark structure.
+- **Original visuals created:** topographic Client Ops Runbook route, staged operating map, tension rails, circular Runbook artifact, evidence transfer equation, executive scorecard, and 90-day operating timeline.
+- **Not used:** copied client logos, third-party logo aggregators, externally hotlinked photography, or an unverified downloadable Bravo logo file.
+- **Recommended use by artifact:** full Bravo-aware black/green/white grammar on the candidate vision site; the same primary colors carried into document accents without changing professional print composition.
 
-The visual system is employer-aware but intentionally avoids resembling an official Bravo CPG publication or implying endorsement.
+The visual system is intentionally employer-aware but remains clearly a Russell Dudek candidate campaign. It does not present itself as an official Bravo CPG publication or imply company endorsement.
