@@ -1,0 +1,63 @@
+name: Refresh application documents
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - app.js
+      - resume.html
+      - cover-letter.html
+      - styles.css
+      - scripts/generate_pdfs.py
+      - requirements.txt
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify-and-refresh:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the campaign branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install rendering dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-inter fonts-noto-core
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Verify interaction source
+        run: node --check app.js
+
+      - name: Verify campaign URL placement
+        run: |
+          grep -q 'https://russelldudek.github.io/Bravo/' resume.html
+          grep -q 'https://russelldudek.github.io/Bravo/' cover-letter.html
+
+      - name: Generate and verify PDFs
+        run: python scripts/generate_pdfs.py
+
+      - name: Commit refreshed PDFs to the pull-request branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/russell-dudek-bravo-cpg-resume.pdf docs/russell-dudek-bravo-cpg-cover-letter.pdf
+          if git diff --cached --quiet; then
+            echo 'PDFs already match the approved HTML.'
+          else
+            git commit -m 'Regenerate resume and cover letter PDFs'
+            git push origin HEAD:${{ github.head_ref }}
+          fi
