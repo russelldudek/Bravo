@@ -10,6 +10,7 @@ on:
       - styles.css
       - scripts/generate_pdfs.py
       - requirements.txt
+      - .github/workflows/refresh-application-docs.yml
   workflow_dispatch:
 
 permissions:
@@ -41,10 +42,14 @@ jobs:
       - name: Verify interaction source
         run: node --check app.js
 
-      - name: Verify campaign URL placement
+      - name: Verify campaign URL and contact placement
         run: |
-          grep -q 'https://russelldudek.github.io/Bravo/' resume.html
-          grep -q 'https://russelldudek.github.io/Bravo/' cover-letter.html
+          for document in resume.html cover-letter.html; do
+            grep -q 'https://russelldudek.github.io/Bravo/' "$document"
+            grep -q '412.287.8640' "$document"
+            grep -q 'russelldudek@gmail.com' "$document"
+            grep -q 'https://www.linkedin.com/in/russelldudek' "$document"
+          done
 
       - name: Generate and verify PDFs
         run: python scripts/generate_pdfs.py
