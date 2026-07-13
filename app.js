@@ -56,23 +56,32 @@ const panels = {
 function renderPanel(key) {
   const panelData = panels[key];
   const panel = document.querySelector('#model-panel');
-  if (!panel || !panelData) return;
+  if (!panelData) return;
 
-  panel.innerHTML = `
-    <div class="model-copy">
-      <div class="panel-kicker">${panelData.kicker}</div>
-      <h3>${panelData.title}</h3>
-      <p>${panelData.body}</p>
-    </div>
-    <div class="panel-grid">
-      ${panelData.artifacts.map(([title, description]) => `<div class="artifact"><b>${title}</b><p>${description}</p></div>`).join('')}
-    </div>`;
+  if (panel) {
+    panel.innerHTML = `
+      <div class="model-copy">
+        <div class="panel-kicker">${panelData.kicker}</div>
+        <h3>${panelData.title}</h3>
+        <p>${panelData.body}</p>
+      </div>
+      <div class="panel-grid">
+        ${panelData.artifacts.map(([title, description]) => `<div class="artifact"><b>${title}</b><p>${description}</p></div>`).join('')}
+      </div>`;
+  }
 
   const wheel = document.querySelector('#runbook-wheel');
   if (wheel) wheel.dataset.stage = key;
 
+  const heroMap = document.querySelector('.hero-map');
+  if (heroMap) heroMap.dataset.stage = key;
+
   document.querySelectorAll('[data-map-node]').forEach(node => {
-    node.classList.toggle('is-active', node.dataset.mapNode === key);
+    const isActive = node.dataset.mapNode === key;
+    node.classList.toggle('is-active', isActive);
+    node.setAttribute('aria-pressed', String(isActive));
+    if (isActive) node.setAttribute('aria-current', 'step');
+    else node.removeAttribute('aria-current');
   });
 
   const number = document.querySelector('#map-stage-number');
@@ -84,12 +93,20 @@ function renderPanel(key) {
 }
 
 const tabButtons = [...document.querySelectorAll('[data-panel]')];
-tabButtons.forEach((button, index) => {
-  button.addEventListener('click', () => {
-    tabButtons.forEach(item => item.setAttribute('aria-selected', 'false'));
-    button.setAttribute('aria-selected', 'true');
-    renderPanel(button.dataset.panel);
+
+function activateStage(key, { focusTab = false } = {}) {
+  if (!panels[key]) return;
+  tabButtons.forEach(button => {
+    const isActive = button.dataset.panel === key;
+    button.setAttribute('aria-selected', String(isActive));
+    button.tabIndex = isActive ? 0 : -1;
+    if (isActive && focusTab) button.focus();
   });
+  renderPanel(key);
+}
+
+tabButtons.forEach((button, index) => {
+  button.addEventListener('click', () => activateStage(button.dataset.panel));
 
   button.addEventListener('keydown', event => {
     if (!['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
@@ -99,11 +116,41 @@ tabButtons.forEach((button, index) => {
     if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') nextIndex = (index - 1 + tabButtons.length) % tabButtons.length;
     if (event.key === 'Home') nextIndex = 0;
     if (event.key === 'End') nextIndex = tabButtons.length - 1;
-    tabButtons[nextIndex].focus();
-    tabButtons[nextIndex].click();
+    activateStage(tabButtons[nextIndex].dataset.panel, { focusTab: true });
   });
 });
-renderPanel('read');
+
+const mapNodes = [...document.querySelectorAll('[data-map-node]')];
+mapNodes.forEach(node => {
+  const key = node.dataset.mapNode;
+  const panelData = panels[key];
+  node.setAttribute('role', 'button');
+  node.setAttribute('tabindex', '0');
+  node.setAttribute('aria-label', `Select ${panelData?.number ?? ''} ${panelData?.kicker.replace(/^Chapter \d+ · /, '') ?? key}`.trim());
+  node.setAttribute('aria-pressed', 'false');
+
+  const selectNode = () => activateStage(key);
+  node.addEventListener('click', selectNode);
+  node.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    selectNode();
+  });
+});
+
+const heroInteractionStyles = document.createElement('style');
+heroInteractionStyles.textContent = `
+  .map-node { cursor: pointer; }
+  .map-node circle { transform-box: fill-box; transform-origin: center; }
+  .map-node:hover circle,
+  .map-node:focus circle { fill: rgba(215,239,100,.28); stroke: var(--bravo-lime); transform: scale(1.14); }
+  .map-node:focus { outline: none; }
+  .map-node.is-active:hover circle,
+  .map-node.is-active:focus circle { fill: var(--bravo-lime); transform: scale(1.25); }
+`;
+document.head.appendChild(heroInteractionStyles);
+
+activateStage('read');
 
 function initSimulator() {
   const root = document.querySelector('#simulator');
